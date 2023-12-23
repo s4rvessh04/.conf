@@ -16,9 +16,9 @@ check_os() {
 }
 
 check_software_exists() {
-    if ! command -v $1 &> /dev/null; then
+    if ! [command -v $1 &> /dev/null]; then
         echo "$1 not found! Install to continue."
-
+        exit 1
     else
         echo "$1 is already installed."
     fi
@@ -31,7 +31,7 @@ download_dotfiles() {
     git clone "$repo_url" "$HOME/.conf"
 }
 
-handle_software_configs() {
+handle_configs() {
     case $1 in
         "git")
             check_software_exists git
@@ -106,7 +106,14 @@ setup() {
 
     check_os
     download_dotfiles
-    handle_software_configs git
+    
+    configs=(".bashrc" ".zshrc" ".tmux.conf" "alacritty" "mpv" "nvim" "git")
+
+    for config in "${configs[@]}"; do
+        handle_configs "$config"
+    done
+
+    echo "Setup complete!"
 }
 
 setup
